@@ -23,7 +23,8 @@
 - [ ] **Flytta mellan enheter** (skola ↔ hem) utan server – Mattedalen gör det med QR-kod och
       fil. Riktig synk kräver backend, DPIA och avtal; inte i version 1.
 - [ ] **Uppläsning:** webbläsarens talsyntes varierar kraftigt i kvalitet. Inspelade
-      röstrepliker (svenska) före Fas 0?
+      röstrepliker (svenska) före Fas 0? Glosor läses nu på rätt språk, men saknar enheten
+      t.ex. en engelsk röst läses de inte alls – ska appen tala om det för den vuxne?
 - [x] ~~Vuxenspärren~~ – fyrsiffrig vuxenkod, som i Mattedalen.
 - [ ] **Flera barn på samma enhet** (syskon) – Mattedalen har profiler. Behövs det här?
 - [ ] **Licens** – Mattedalen är PolyForm Noncommercial. Samma här?

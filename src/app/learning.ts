@@ -21,6 +21,8 @@ export function deckToItems(deck: Deck, technique: Technique, createdAt: string)
       answer: card.answer,
       pictureId: card.pictureId,
       distractors: card.distractors.length > 0 ? card.distractors : otherAnswers(deck, index),
+      promptLang: deck.promptLang,
+      answerLang: deck.answerLang,
     },
   }));
 }

@@ -1,12 +1,23 @@
 /**
- * Optional read-aloud in Swedish (Web Speech API). Only voices on the device
- * are used: some browsers (Chrome) also offer network voices
- * (`localService === false`) that send the text to a server, and nothing may
- * leave the device. Without a local Swedish voice nothing is read aloud, not
- * even with the browser's default voice, which may be a network one.
+ * Optional read-aloud (Web Speech API). Only voices on the device are used:
+ * some browsers (Chrome) also offer network voices (`localService === false`)
+ * that send the text to a server, and nothing may leave the device.
+ *
+ * Every part is read in its own language: a Swedish sentence with a Swedish
+ * voice, an English word (glosa) with an English one. A part with no local
+ * voice in its language is left out rather than read by another language's
+ * voice, which would teach the child the wrong pronunciation.
  */
 
-const LANG = 'sv-SE';
+import { LANGUAGES } from '../content/languages';
+import type { LanguageCode } from '../engine/types';
+
+/** A piece of text in a known language. A plain string is Swedish. */
+export interface SpokenPart {
+  text: string;
+  lang: LanguageCode;
+}
+export type Spoken = string | SpokenPart;
 
 function synth(): SpeechSynthesis | undefined {
   return typeof speechSynthesis !== 'undefined' ? speechSynthesis : undefined;
@@ -16,22 +27,27 @@ export function speechSupported(): boolean {
   return synth() !== undefined && typeof SpeechSynthesisUtterance !== 'undefined';
 }
 
-function swedishVoice(): SpeechSynthesisVoice | undefined {
-  const voices = (synth()?.getVoices() ?? []).filter((v) => v.localService === true);
-  return voices.find((v) => v.lang === LANG) ?? voices.find((v) => v.lang.toLowerCase().startsWith('sv'));
+/** A local voice for the language: the preferred tags in order, then any voice of the language. */
+export function voiceFor(lang: LanguageCode, voices: readonly SpeechSynthesisVoice[] = synth()?.getVoices() ?? []): SpeechSynthesisVoice | undefined {
+  const local = voices.filter((v) => v.localService === true);
+  for (const tag of LANGUAGES[lang].tags) {
+    const exact = local.find((v) => v.lang.replace('_', '-').toLowerCase() === tag.toLowerCase());
+    if (exact) return exact;
+  }
+  return local.find((v) => v.lang.toLowerCase().startsWith(lang));
 }
 
 /** Voices load asynchronously in some browsers. True if a Swedish voice on the device exists. */
 export async function hasSwedishVoice(): Promise<boolean> {
   const s = synth();
   if (!s) return false;
-  if (swedishVoice()) return true;
+  if (voiceFor('sv')) return true;
   await new Promise<void>((resolve) => {
     const done = () => resolve();
     s.addEventListener('voiceschanged', done, { once: true });
     setTimeout(done, 1500);
   });
-  return swedishVoice() !== undefined;
+  return voiceFor('sv') !== undefined;
 }
 
 /** "6 · 7" → "6 gånger 7", as a child would say it. */
@@ -61,10 +77,14 @@ function wake(s: SpeechSynthesis): void {
   if (typeof s.resume === 'function') s.resume();
 }
 
+/** Bumped by every new `speak`: an older sequence stops instead of talking over it. */
+let generation = 0;
+
 /**
- * Speaks the text with a Swedish voice on the device; resolves when done, or
- * right away if there is no such voice. It never waits for voices to load:
- * the read-aloud button is only shown when `hasSwedishVoice()` said yes at start.
+ * Speaks the parts one after another, each with a voice on the device in its
+ * own language; resolves when done. Parts without such a voice are skipped.
+ * It never waits for voices to load: the read-aloud button is only shown when
+ * `hasSwedishVoice()` said yes at start.
  *
  * Chrome on Android can get stuck: paused, or still "speaking" an earlier
  * utterance, so that new ones wait in silence until the phone is restarted.
@@ -72,14 +92,27 @@ function wake(s: SpeechSynthesis): void {
  * cancelled with a short pause after it, and an utterance that has not
  * started after a moment is tried once more.
  */
-export async function speak(text: string): Promise<void> {
+export async function speak(spoken: Spoken | readonly Spoken[]): Promise<void> {
   const s = synth();
-  const voice = swedishVoice();
-  if (!s || typeof SpeechSynthesisUtterance === 'undefined' || !voice) return;
+  if (!s || typeof SpeechSynthesisUtterance === 'undefined') return;
+  const parts = (Array.isArray(spoken) ? spoken : [spoken]) as readonly Spoken[];
+  const voiced = parts
+    .map((p) => (typeof p === 'string' ? { text: p, lang: 'sv' as const } : p))
+    .map((p) => ({ ...p, voice: voiceFor(p.lang) }))
+    .filter((p): p is SpokenPart & { voice: SpeechSynthesisVoice } => p.voice !== undefined && p.text.trim() !== '');
+  if (voiced.length === 0) return;
+  const mine = ++generation;
   if (s.speaking || s.pending) {
     s.cancel();
     await pause(CANCEL_GAP_MS);
   }
+  for (const part of voiced) {
+    if (generation !== mine) return;
+    await speakOne(s, part.lang === 'sv' ? spokenText(part.text) : part.text, part.voice);
+  }
+}
+
+function speakOne(s: SpeechSynthesis, text: string, voice: SpeechSynthesisVoice): Promise<void> {
   wake(s);
   return new Promise((resolve) => {
     let started = false;
@@ -90,8 +123,8 @@ export async function speak(text: string): Promise<void> {
       resolve();
     };
     const say = (again: boolean) => {
-      const u = new SpeechSynthesisUtterance(spokenText(text));
-      u.lang = LANG;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = voice.lang;
       u.voice = voice;
       u.rate = 0.9;
       u.onstart = () => {

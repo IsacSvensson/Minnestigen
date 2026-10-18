@@ -43,5 +43,6 @@ hålla dem. Använd listan vid kodgranskning.
 
 ## Tillgänglighet
 - [ ] Instruktioner kan **läsas upp**; svar kan ges med tal eller bild, inte bara text.
+- [ ] Ord på andra språk (glosor) läses **aldrig med fel språks röst** och märks med `lang`.
 - [ ] Stora tryckytor (≥ 60 px), hög kontrast, respekterar "reducera rörelse".
 - [ ] Korta pass (5–10 min) med möjlighet till paus.

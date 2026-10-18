@@ -40,6 +40,7 @@ vi kan börja testa med riktiga barn tidigt.
 - [x] Skolkopplingen (grund): förälder lägger in listor `fråga = svar`
 - [x] Vuxenläge bakom spärr: profil, lärandeprofil, radera data
 - [x] Samtycke vid första start; all data lokalt; vuxenkod; uppläsning med lokala röster
+- [x] Språk per lista (frågor/svar): glosor läses med röst på rätt språk och märks med `lang`
 
 ## M2 Hela passet
 

@@ -22,6 +22,9 @@ test('a new child plays Gissa och pröva, lights lanterns and moves on to Göm o
   for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Nästa' }).click();
   await expect(page.getByRole('heading', { name: 'Göm och säg' })).toBeVisible();
   await expect(page.getByText('gömt')).toBeVisible();
+  // English glosor are marked as English, so screen readers and read-aloud use an English voice.
+  await expect(page.locator('.flashcard__prompt')).toHaveAttribute('lang', 'sv-SE');
+  await expect(page.getByRole('button', { name: 'apple', exact: true }).locator('span[lang]')).toHaveAttribute('lang', 'en-GB');
 
   // The hint ladder: first letter, then the answer is always shown after the attempt.
   await page.getByRole('button', { name: 'Ledtråd' }).click();

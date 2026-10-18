@@ -6,6 +6,7 @@ import { availableHints } from '../../engine/scheduler';
 import type { CardContent, HintLevel, MemoryItem } from '../../engine/types';
 import { icon } from '../../graphics/icons';
 import { picture } from '../../graphics/pictures';
+import { langTag } from '../../content/languages';
 import type { AppContext } from '../app';
 import { fill, h, type Child } from '../dom';
 import { button, guide } from '../ui';
@@ -16,7 +17,8 @@ export interface CardResult {
 }
 
 function hintView(hint: HintLevel, card: CardContent): Child {
-  if (hint === 'firstLetter') return h('div', { class: 'hint' }, 'Börjar på: ', h('b', null, `${card.answer.charAt(0).toUpperCase()}…`));
+  if (hint === 'firstLetter')
+    return h('div', { class: 'hint' }, 'Börjar på: ', h('b', { lang: langTag(card.answerLang) }, `${card.answer.charAt(0).toUpperCase()}…`));
   if (hint === 'place') return h('div', { class: 'hint' }, 'Platsen: ', h('b', null, card.place ?? ''));
   if (hint === 'picture' && card.pictureId) return h('div', { class: 'hint' }, picture(card.pictureId, 72));
   return null;
@@ -33,10 +35,10 @@ function flashcard(card: CardContent, open: boolean, withPicture = false): HTMLE
     'div',
     { class: 'card flashcard' },
     withPicture && card.pictureId && picture(card.pictureId, 96),
-    h('div', { class: 'flashcard__prompt' }, card.prompt),
+    h('div', { class: 'flashcard__prompt', lang: langTag(card.promptLang) }, card.prompt),
     h(
       'div',
-      { class: `flashcard__flap ${open ? 'flashcard__flap--open pop' : 'flashcard__flap--hidden'}` },
+      { class: `flashcard__flap ${open ? 'flashcard__flap--open pop' : 'flashcard__flap--hidden'}`, lang: open ? langTag(card.answerLang) : undefined },
       open ? card.answer : h('span', { class: 'flap-label' }, icon('eyeClosed'), ' gömt'),
     ),
   );
@@ -64,7 +66,7 @@ export function hideAndSay(ctx: AppContext, mount: HTMLElement, item: MemoryItem
           'div',
           { class: 'choices' },
           choices.map((choice) =>
-            button(choice, { big: true, class: 'choice', onClick: () => feedback({ correct: choice === card.answer && currentHint() !== 'answer', hint: currentHint() }, choice) }),
+            button(h('span', { lang: langTag(card.answerLang) }, choice), { big: true, class: 'choice', onClick: () => feedback({ correct: choice === card.answer && currentHint() !== 'answer', hint: currentHint() }, choice) }),
           ),
         ),
       h(
@@ -106,7 +108,15 @@ export function hideAndSay(ctx: AppContext, mount: HTMLElement, item: MemoryItem
       shownHints(),
       picked !== undefined &&
         picked !== card.answer &&
-        h('p', { class: 'muted center' }, 'Du valde ', h('b', null, picked), '. Rätt svar är ', h('b', null, card.answer), '.'),
+        h(
+          'p',
+          { class: 'muted center' },
+          'Du valde ',
+          h('b', { lang: langTag(card.answerLang) }, picked),
+          '. Rätt svar är ',
+          h('b', { lang: langTag(card.answerLang) }, card.answer),
+          '.',
+        ),
       button('Vidare', { variant: 'primary', big: true, wide: true, icon: 'next', onClick: () => onDone(result) }),
     );
 
@@ -118,7 +128,12 @@ export function studyCard(ctx: AppContext, mount: HTMLElement, item: MemoryItem,
   const card = item.content as CardContent;
   fill(
     mount,
-    guide(ctx, 'happy', `Titta och säg tyst för dig själv: ${card.prompt}, ${card.answer}.`, 'Titta noga och säg det tyst för dig själv.'),
+    guide(
+      ctx,
+      'happy',
+      ['Titta och säg tyst för dig själv:', { text: card.prompt, lang: card.promptLang ?? 'sv' }, { text: card.answer, lang: card.answerLang ?? 'sv' }],
+      'Titta noga och säg det tyst för dig själv.',
+    ),
     flashcard(card, true, true),
     button('Nästa', { variant: 'primary', big: true, wide: true, icon: 'next', onClick: onNext }),
   );

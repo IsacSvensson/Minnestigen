@@ -7,14 +7,17 @@ test('a grown-up chooses a code, adds a school list, and it comes first in Göm 
 
   await page.getByLabel('Listans namn').fill('Glosor v.43');
   await page.getByLabel('Kort').fill('hund = dog\nkatt = cat\nbara text\nko = cow');
+  await page.getByLabel('Svaren är på').selectOption('en');
   await page.getByRole('button', { name: 'Lägg till 3 kort' }).click();
   await expect(page.getByText('Glosor v.43')).toBeVisible();
+  await expect(page.getByText('svenska → engelska')).toBeVisible();
 
   await page.getByLabel('Steg på stigen').selectOption('1');
   await page.getByRole('button', { name: 'Tillbaka' }).click();
 
   await page.getByRole('button', { name: 'Gå stigen' }).click();
   await expect(page.locator('.flashcard__prompt')).toHaveText('hund');
+  await expect(page.locator('.flashcard__flap')).toHaveAttribute('lang', 'en-GB');
 });
 
 test('the wrong code keeps the grown-ups view closed', async ({ page }) => {

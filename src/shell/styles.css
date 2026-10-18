@@ -786,3 +786,9 @@ body {
 [tabindex='-1']:focus {
   outline: none;
 }
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}

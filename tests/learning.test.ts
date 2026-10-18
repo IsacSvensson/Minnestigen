@@ -30,6 +30,14 @@ describe('decks', () => {
     }
   });
 
+  it('carries the list languages onto every card, for read-aloud', () => {
+    const glosor = { id: 'egen', title: 'Glosor', cards: parseCardLines('hund = dog'), answerLang: 'en' as const };
+    const [item] = deckToItems(glosor, 'retrieval', '');
+    expect(item!.content).toMatchObject({ prompt: 'hund', answer: 'dog', answerLang: 'en' });
+    const english = BUILT_IN_DECKS.find((d) => d.id === 'engelska-saker')!;
+    expect(deckToItems(english, 'retrieval', '')[0]!.content).toMatchObject({ answer: 'apple', answerLang: 'en' });
+  });
+
   it('introduces school lists first and never repeats learned cards', () => {
     const school = { id: 'egen', title: 'Glosor', cards: parseCardLines('hund = dog\nkatt = cat') };
     const first = nextNewItems([school], new Set(), 3, '');

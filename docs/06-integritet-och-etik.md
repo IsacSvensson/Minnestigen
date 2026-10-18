@@ -20,6 +20,9 @@ stäm av med jurist före lansering och pilot.
   råkar gå in) och har "Radera all data".
 - Uppläsning använder **bara röster som finns på enheten** (`localService`). Chromes
   nätverksröster skickar texten till en server och används aldrig.
+- Varje del läses på **sitt eget språk**: instruktioner med svensk röst, glosor med en röst
+  på glosans språk (listan anger språk för frågor och svar). Saknas en lokal röst för språket
+  hoppas ordet över hellre än att läsas med fel uttal.
 
 ## Etik i forskningen (F5)
 

@@ -4,7 +4,8 @@ import * as act from '../../app/actions';
 import { parseCardLines } from '../../app/learning';
 import { calibrationBias, delayedRecall, meanHintSteps, recallIn, type Ratio } from '../../engine/metrics';
 import { STEPS } from '../../engine/progression';
-import type { StepId } from '../../engine/types';
+import type { LanguageCode, StepId } from '../../engine/types';
+import { LANGUAGE_CODES, LANGUAGES } from '../../content/languages';
 import { show, type AppContext } from '../app';
 import { fill, h } from '../dom';
 import { APP_BUILD } from '../pwa';
@@ -16,6 +17,12 @@ import { showSetup } from './setup';
 const PLAYABLE_STEPS: StepId[] = [0, 1];
 
 const percent = (r: Ratio) => (r.total === 0 ? '–' : `${Math.round((r.recalled / r.total) * 100)} % (${r.recalled}/${r.total})`);
+
+/** " · svenska → engelska", or nothing for an all-Swedish list. */
+function deckLanguages(prompt: LanguageCode | undefined, answer: LanguageCode | undefined): string {
+  if (!prompt && !answer) return '';
+  return ` · ${LANGUAGES[prompt ?? 'sv'].name} → ${LANGUAGES[answer ?? 'sv'].name}`;
+}
 
 function stat(label: string, value: string): HTMLElement {
   return h('div', { class: 'stat' }, h('span', null, label), h('strong', null, value));
@@ -44,12 +51,24 @@ export function showParent(ctx: AppContext): void {
 
     const deckTitle = h('input', { id: 'deck-title', placeholder: 'Veckans glosor v. 43' });
     const deckLines = h('textarea', { id: 'deck-cards', placeholder: 'hund = dog\nkatt = cat\n7 · 8 = 56' });
+    const languageSelect = (id: string) =>
+      h('select', { id }, LANGUAGE_CODES.map((code) => h('option', { value: code }, LANGUAGES[code].name)));
+    const promptLang = languageSelect('deck-prompt-lang');
+    const answerLang = languageSelect('deck-answer-lang');
     const addButton = button('Lägg till lista', {
       variant: 'forest',
       icon: 'plus',
       disabled: true,
       onClick: () => {
-        state.apply(act.addDeck({ title: deckTitle.value.trim(), cards: parseCardLines(deckLines.value) }));
+        const language = (select: HTMLSelectElement) => (select.value === 'sv' ? undefined : (select.value as LanguageCode));
+        state.apply(
+          act.addDeck({
+            title: deckTitle.value.trim(),
+            cards: parseCardLines(deckLines.value),
+            promptLang: language(promptLang),
+            answerLang: language(answerLang),
+          }),
+        );
         render();
       },
     });
@@ -81,12 +100,19 @@ export function showParent(ctx: AppContext): void {
         h('p', { class: 'small muted' }, 'Lägg in veckans glosor, tabeller eller begrepp. En rad per kort: ', h('code', null, 'fråga = svar'), '. Skolans listor kommer före appens egna.'),
         h('label', { class: 'field', for: 'deck-title' }, 'Listans namn', deckTitle),
         h('label', { class: 'field', for: 'deck-cards' }, 'Kort', deckLines),
+        h(
+          'div',
+          { class: 'field-row' },
+          h('label', { class: 'field', for: 'deck-prompt-lang' }, 'Frågorna är på', promptLang),
+          h('label', { class: 'field', for: 'deck-answer-lang' }, 'Svaren är på', answerLang),
+        ),
+        h('p', { class: 'muted small' }, 'Språket styr uppläsningen. Finns ingen röst för språket på enheten läses orden inte upp.'),
         addButton,
         data.customDecks.map((deck) =>
           h(
             'div',
             { class: 'stat stat--center' },
-            h('span', null, deck.title, h('span', { class: 'muted' }, ` · ${deck.cards.length} kort`)),
+            h('span', null, deck.title, h('span', { class: 'muted' }, ` · ${deck.cards.length} kort${deckLanguages(deck.promptLang, deck.answerLang)}`)),
             iconButton('trash', `Ta bort ${deck.title}`, () => {
               state.apply(act.removeDeck(deck.id));
               render();

@@ -1,6 +1,8 @@
 // Built-in practice decks for Göm och säg. Parents and teachers add real school content through
 // Skolkopplingen; these exist so the app is usable from the first session.
 
+import type { LanguageCode } from '../engine/types';
+
 export interface DeckCard {
   prompt: string;
   answer: string;
@@ -16,12 +18,16 @@ export interface Deck {
   id: string;
   title: string;
   cards: DeckCard[];
+  /** Language of the prompts and of the answers, for read-aloud. Absent means Swedish. */
+  promptLang?: LanguageCode;
+  answerLang?: LanguageCode;
 }
 
 export const BUILT_IN_DECKS: readonly Deck[] = [
   {
     id: 'engelska-saker',
     title: 'Engelska: saker',
+    answerLang: 'en',
     cards: [
       { prompt: 'äpple', answer: 'apple', distractors: ['egg', 'ball'], pictureId: 'apple' },
       { prompt: 'fisk', answer: 'fish', distractors: ['dish', 'wish'], pictureId: 'fish' },

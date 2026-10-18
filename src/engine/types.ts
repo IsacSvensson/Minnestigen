@@ -26,6 +26,9 @@ export type SupportLevel = 'show' | 'together' | 'self';
 export const HINT_LADDER = ['none', 'firstLetter', 'place', 'picture', 'answer'] as const;
 export type HintLevel = (typeof HINT_LADDER)[number];
 
+/** Language of a card's prompt or answer. Absent means Swedish. */
+export type LanguageCode = 'sv' | 'en' | 'de' | 'fr' | 'es';
+
 /** A question/answer card, e.g. a times-table fact or a word pair from Skolkopplingen. */
 export interface CardContent {
   kind: 'card';
@@ -37,6 +40,9 @@ export interface CardContent {
   place?: string;
   /** Wrong but plausible options for the "välj" answer mode. */
   distractors?: string[];
+  /** Read aloud and marked up in this language (glosor). Absent means Swedish. */
+  promptLang?: LanguageCode;
+  answerLang?: LanguageCode;
 }
 
 /** A set of pictures to remember, used by Gissa och pröva and its next-day check. */

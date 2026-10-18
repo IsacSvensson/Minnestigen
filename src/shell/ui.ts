@@ -4,7 +4,7 @@ import { icon, type IconName } from '../graphics/icons';
 import { owl, type OwlMood } from '../graphics/owl';
 import type { AppContext } from './app';
 import { h, type Child, type Props } from './dom';
-import { speak } from './speech';
+import { speak, type Spoken } from './speech';
 
 type Variant = 'primary' | 'forest' | 'ghost' | 'plain';
 
@@ -63,8 +63,13 @@ export function screen(o: ScreenOptions = {}): { view: HTMLElement; body: HTMLEl
   return { view, body };
 }
 
-/** The owl with a speech bubble. With a Swedish voice on the device, the text can be read aloud. */
-export function guide(ctx: AppContext, mood: OwlMood, say: string, content: Child = say): HTMLElement {
+/**
+ * The owl with a speech bubble. With a Swedish voice on the device, the text can be read aloud;
+ * `say` may mix languages (a glosa in English) and each part is read in its own language.
+ */
+export function guide(ctx: AppContext, mood: OwlMood, say: Spoken | readonly Spoken[], content?: Child): HTMLElement {
+  const parts = (Array.isArray(say) ? say : [say]) as readonly Spoken[];
+  const text = content ?? parts.map((p) => (typeof p === 'string' ? p : p.text)).join(' ');
   return h(
     'div',
     { class: 'guide' },
@@ -72,7 +77,7 @@ export function guide(ctx: AppContext, mood: OwlMood, say: string, content: Chil
     h(
       'div',
       { class: 'bubble' },
-      h('span', { class: 'bubble__text', 'aria-live': 'polite' }, content),
+      h('span', { class: 'bubble__text', 'aria-live': 'polite' }, text),
       ctx.canSpeak &&
         h('button', { type: 'button', class: 'btn bubble__speak', 'aria-label': 'Läs upp', title: 'Läs upp', onclick: () => void speak(say) }, icon('listen', 24)),
     ),
