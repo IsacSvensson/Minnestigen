@@ -5,23 +5,24 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run typecheck && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.engine.json && tsc --noEmit -p tsconfig.test.json && tsc --noEmit -p tsconfig.e2e.json",
     "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "dependencies": {
-    "@fontsource-variable/nunito": "^5.3.0",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "icons": "node scripts/make-icons.mjs"
   },
   "devDependencies": {
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^6.1.2",
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^22.20.5",
+    "fake-indexeddb": "^6.2.6",
     "typescript": "^7.0.2",
     "vite": "^8.3.4",
     "vitest": "^5.0.5"
-  }
+  },
+  "dependencies": {
+    "idb": "^8.0.4"
+  },
+  "description": "Forskningsbaserad minnesapp för barn 6–12 år (offline-PWA)"
 }

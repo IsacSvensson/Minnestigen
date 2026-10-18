@@ -18,13 +18,15 @@
 
 ## Produkt- och teknikfrågor (våra egna)
 
-- [ ] **Plattform:** räcker PWA för piloten (surfplatta i skolan + föräldrars telefoner),
-      eller behövs butiksappar? Se [ADR 0001](adr/0001-plattform-pwa.md).
-- [ ] **Synk mellan enheter** (skola ↔ hem) utan att bryta integritetslöftet – kräver backend,
-      DPIA och avtal. Inte i version 1.
+- [ ] **Plattform:** räcker PWA på GitHub Pages för piloten (surfplatta i skolan + föräldrars
+      telefoner), eller behövs butiksappar? Se [ADR 0001](adr/0001-plattform-pwa.md).
+- [ ] **Flytta mellan enheter** (skola ↔ hem) utan server – Mattedalen gör det med QR-kod och
+      fil. Riktig synk kräver backend, DPIA och avtal; inte i version 1.
 - [ ] **Uppläsning:** webbläsarens talsyntes varierar kraftigt i kvalitet. Inspelade
       röstrepliker (svenska) före Fas 0?
-- [ ] **Vuxenspärren** (multiplikation) kan lösas av 10–12-åringar. Bättre spärr?
+- [x] ~~Vuxenspärren~~ – fyrsiffrig vuxenkod, som i Mattedalen.
+- [ ] **Flera barn på samma enhet** (syskon) – Mattedalen har profiler. Behövs det här?
+- [ ] **Licens** – Mattedalen är PolyForm Noncommercial. Samma här?
 - [ ] **Startsteg efter ålder:** alla börjar på steg 0 idag. Behövs ett placeringstest för
       äldre barn redan i version 1?
 - [ ] **Kriterier för steg 1 → 2** ("startar självtest utan uppmaning") – hur mäter vi

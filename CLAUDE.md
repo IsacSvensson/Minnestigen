@@ -6,22 +6,29 @@ ovanpå. Allt underlag finns i `docs/` – läs `docs/README.md` först och
 `docs/produktregler.md` innan du ändrar något barnet ser.
 
 ## Kommandon
-- `npm test` – enhetstester (vitest)
-- `npm run typecheck` – TypeScript
-- `npm run build` – produktionsbygge
+- `npm test` – enhetstester (vitest, `tests/`)
+- `npm run e2e` – webbläsartester (Playwright, `e2e/`, telefon + surfplatta)
+- `npm run typecheck` – TypeScript (app, motor med enbart ES-lib, tester, e2e)
+- `npm run build` – produktionsbygge till `dist/`
 - `npm run dev` – utvecklingsserver
 
-Kör alla tre (`test`, `typecheck`, `build`) innan commit.
+Kör `typecheck`, `test`, `build` och `e2e` innan commit.
+
+## Plattform
+Bara klient: statisk PWA i vanilla TypeScript utan ramverk, publicerad på GitHub Pages från
+standardgrenen. Uppsättningen följer systerprojektet Mattedalen (IsacSvensson/Mattedalen) –
+titta där först när något nytt behövs (installationsguide, bakåtknapp, överföring mellan
+enheter). Samma ursprung som Mattedalen: allt som lagras eller cachas heter `minnesstigen…`.
 
 ## Struktur
-- `src/engine/` – pedagogisk motor, ren TS, inga React-/lagringsimporter. Tid skickas in
-  som parameter. Pedagogiska parametrar är namngivna konstanter med evidensnivå (N1–N4).
-- `src/storage/` – lokal lagring, versionerat schema
-- `src/app/` – app-state (`AppState.tsx`) och kortlekslogik
-- `src/graphics/` – **all grafik, egenritad SVG**. Inga ikon-/illustrationsbibliotek.
+- `src/engine/` – pedagogisk motor, ren TS, bara ES-lib. Tid skickas in som parameter.
+  Pedagogiska parametrar är namngivna konstanter med evidensnivå (N1–N4).
+- `src/app/` – `actions.ts` (rena funktioner data → data), `state.ts`, kortlekslogik
+- `src/storage/` – IndexedDB (`idb`), migreringar i `MIGRATIONS`, minnesfallback
+- `src/graphics/` – **all grafik, egenritad SVG-markup**. Inga ikon-/illustrationsbibliotek.
   Följ `docs/design/grafik.md`.
-- `src/ui/` – designsystem (tokens i `theme.css`, komponenter)
-- `src/features/` – skärmar och spellägen
+- `src/shell/` – webbläsardelen: `dom.ts` (`h`, `s`, `fill`, `svgMarkup`), `ui.ts`
+  (knappar, `screen`, `guide`), `app.ts` (`show`), `modes/`, `screens/`, `styles.css`
 
 ## Regler som aldrig bryts
 - Rätt svar visas alltid efter varje försök.

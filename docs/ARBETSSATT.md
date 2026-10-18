@@ -5,15 +5,18 @@
 1. **Issue först.** Varje förändring utgår från en rad i [PLAN](PLAN.md) eller ett issue.
    Pedagogiska förändringar hänvisar till avsnitt i `docs/` och anger evidensnivå (N1–N4).
 2. **En branch per ändring**, små PR:er mot `main`. Hellre tre små än en stor.
-3. **CI måste vara grön**: typkontroll, enhetstester, bygge (`.github/workflows/ci.yml`).
+3. **CI måste vara grön**: typkontroll, enhetstester, bygge och e2e-tester
+   (`.github/workflows/ci.yml`). Standardgrenen publiceras automatiskt på GitHub Pages
+   (`.github/workflows/deploy.yml`).
 4. **Granskning mot [produktreglerna](produktregler.md)** – checklistan används i varje PR
    som rör det barnet ser eller hur motorn beslutar.
 5. Merga, uppdatera status i PLAN.
 
 ## Definition of done
 
-- [ ] `npm run typecheck`, `npm test` och `npm run build` går igenom
-- [ ] Ändringar i `src/engine/` har enhetstester
+- [ ] `npm run typecheck`, `npm test`, `npm run build` och `npm run e2e` går igenom
+- [ ] Ändringar i `src/engine/` och `src/app/` har enhetstester (`tests/`)
+- [ ] Nya flöden för barnet eller den vuxne har ett e2e-test (`e2e/`)
 - [ ] UI provat i mobilbredd (390 px) och surfplatta (768 px), med skärmdump i PR:en
 - [ ] Ny grafik följer [designguiden](design/grafik.md) och är egenritad
 - [ ] Texter till barnet är korta, på enkel svenska och går att läsa upp
@@ -24,13 +27,16 @@
 
 ```
 src/
-  engine/    Pedagogisk motor – ren TypeScript, inga React- eller lagringsberoenden
-  storage/   Lokal lagring (versionerat schema)
-  app/       App-state och kopplingen motor ↔ lagring ↔ UI
-  content/   Inbyggt innehåll (kortlekar)
-  graphics/  All egen grafik som SVG-komponenter
-  ui/        Designsystem: tokens, knappar, kort, Ugglan med pratbubbla
-  features/  Skärmar: home, session, modes (spellägen), parent (vuxenläge)
+  engine/    Pedagogisk motor – ren TypeScript, bara ES-lib (ingen DOM, ingen lagring)
+  app/       Åtgärder som rena funktioner (data → ny data), AppState, kortlekslogik
+  storage/   IndexedDB med migreringar, minnesfallback
+  content/   Inbyggt innehåll (kortlekar, bildkatalogens namn)
+  graphics/  All egen grafik som SVG-markup
+  shell/     Allt i webbläsaren: main, dom-hjälpare, ui-byggstenar, styles.css, fonts,
+             pwa (uppdateringar), speech (lokala röster), modes/ (spellägen), screens/
+  sw/        Service worker-mall
+tests/       Enhetstester (vitest, Node)
+e2e/         Webbläsartester (Playwright, telefon + surfplatta)
 ```
 
 - **Motorn bestämmer, UI:t visar.** Schema, ledtrådar, progression och mått ligger i
@@ -40,7 +46,10 @@ src/
 - **Tid** skickas in som parameter i motorn (`today`) – aldrig `new Date()` inne i
   motorfunktioner – så att allt går att testa.
 - **Ingen data lämnar enheten** utan ett nytt ADR-beslut, DPIA och vårdnadshavares val.
-- **Beroenden:** så få som möjligt. Inga UI-kit, ikon- eller illustrationsbibliotek.
+- **Beroenden:** så få som möjligt – inget ramverk, inga UI-kit, ikon- eller
+  illustrationsbibliotek. Enda körberoendet är `idb`.
+- **Samma ursprung som Mattedalen** (`isacsvensson.github.io`): cache-prefix, databasnamn
+  och nycklar måste börja med `minnesstigen`.
 
 ## Beslut
 
@@ -53,8 +62,10 @@ Ett beslut ändras genom ett nytt ADR som ersätter det gamla.
 npm install         # installera
 npm run dev         # utvecklingsserver
 npm test            # enhetstester
-npm run typecheck   # typkontroll
+npm run e2e         # webbläsartester (bygger och startar preview själv)
+npm run typecheck   # typkontroll (app, motor, tester, e2e)
 npm run build       # produktionsbygge till dist/
+npm run icons       # PNG-ikoner från public/icons/icon.svg
 ```
 
 ## Att jobba med Claude

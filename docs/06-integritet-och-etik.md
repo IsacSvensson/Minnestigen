@@ -12,11 +12,14 @@ stäm av med jurist före lansering och pilot.
 - Skickas barnets svar till en AI-tjänst: minimering, pseudonymisering, vårdnadshavares val.
 
 ### Så gör prototypen idag
-- All data i `localStorage` på enheten ([`src/storage/store.ts`](../src/storage/store.ts)).
-  Inget nätverksanrop görs med barnets data.
+- All data i IndexedDB på enheten ([`src/storage/`](../src/storage)). Appen är bara statiska
+  filer; inget nätverksanrop görs med barnets data (e2e-testet `offline.spec.ts` kontrollerar
+  att ingen trafik går till andra adresser).
 - Förstagångsuppsättning kräver att vårdnadshavare bekräftar samtycke.
-- Vuxenläget ligger bakom en enkel vuxenspärr och har "Radera all data".
-- Uppläsning använder webbläsarens inbyggda talsyntes på enheten.
+- Vuxenläget ligger bakom en fyrsiffrig vuxenkod (inte ett säkerhetsskydd, bara mot att barn
+  råkar gå in) och har "Radera all data".
+- Uppläsning använder **bara röster som finns på enheten** (`localService`). Chromes
+  nätverksröster skickar texten till en server och används aldrig.
 
 ## Etik i forskningen (F5)
 

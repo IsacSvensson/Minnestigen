@@ -1,4 +1,4 @@
-# ADR 0004 – All data lokalt på enheten i version 1
+# ADR 0004 – All data lokalt på enheten, i IndexedDB
 
 **Status:** Beslutad (2026-10-18)
 
@@ -7,16 +7,22 @@ Målgruppen är under 13 år. Underlaget kräver vårdnadshavares samtycke, att 
 bara lagras på enheten, inga sociala funktioner, ingen profilering och DPIA före lansering.
 
 ## Beslut
-- Version 1 har **ingen server**. All data ligger i webbläsarens lagring på enheten, i ett
-  versionerat schema (`src/storage/store.ts`). `localStorage` nu, IndexedDB från M2
-  (krävs för bilder i M4).
-- Vårdnadshavare bekräftar samtycke vid första start; vuxenläget kan radera allt.
+- Ingen server. All data ligger i **IndexedDB** på enheten (`src/storage/`), som i
+  Mattedalen: versionerade migreringar (`MIGRATIONS` i `idb.ts`), ett dokument (`AppData`)
+  med `normalize()` för fält som tillkommit. Blockerar webbläsaren IndexedDB används ett
+  minneslager och barnet får veta att inget sparas.
+- Appen ber webbläsaren om beständig lagring (`navigator.storage.persist()`); vuxenläget
+  visar status.
+- Vårdnadshavare bekräftar samtycke vid första start; vuxenläget (bakom fyrsiffrig kod)
+  kan radera allt.
 - Export för piloten (M5) sker pseudonymiserat och på vårdnadshavares/forskningshuvudmannens
   initiativ.
 
 ## Konsekvenser
 - + Starkt integritetslöfte, inga personuppgiftsbiträden, ingen drift.
+- + IndexedDB rymmer bilder till minnespalatset (M4).
 - − Ingen synk mellan skola och hem. Lärarläge (version 2) kräver backend, avtal med
-  huvudmän och nytt ADR.
-- − Data kan försvinna om webbläsaren rensar lagring → informera föräldrar; utvärdera
-  `navigator.storage.persist()` i M2.
+  huvudmän och nytt ADR. Överföring mellan enheter kan lösas utan server (Mattedalen
+  använder QR-kod/fil) – se PLAN.
+- − Allt i ett dokument räcker länge men loggen växer; komprimering av gamla försök
+  (som Mattedalens `compactLog`) när det behövs.

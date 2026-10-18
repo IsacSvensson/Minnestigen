@@ -2,7 +2,7 @@
 
 import type { MemoryItem, Technique } from '../engine/types';
 import { BUILT_IN_DECKS, type Deck } from '../content/decks';
-import { PICTURE_IDS } from '../graphics/pictures';
+import { PICTURE_IDS } from '../content/pictures';
 
 /** Item ids are stable per deck position, so a card is only ever learned once. */
 export function cardItemId(deckId: string, index: number): string {

@@ -24,7 +24,9 @@ vi kan börja testa med riktiga barn tidigt.
 ## M1 Kärnslinga ✅
 
 - [x] Dokumentation utdragen ur underlagen ([docs/](README.md)), produktregler, plan, arbetssätt
-- [x] Projekt: React + TypeScript + Vite, PWA-manifest, CI (typkontroll, test, bygge)
+- [x] Projekt som i Mattedalen: klient-only vanilla TypeScript + Vite, PWA med egen
+      service worker (fungerar offline), IndexedDB, GitHub Pages-deploy, CI med enhets- och
+      e2e-tester (Playwright, telefon + surfplatta)
 - [x] **Pedagogisk motor** ([`src/engine/`](../src/engine)): repetitionsschema per teknik,
       ledtrådsstege, passplanering, progression (alla 8 steg som data), mätindikatorer
       (omedelbar/fördröjd återkallning, kalibrering, ledtrådsbehov, långtidsrubrik)
@@ -37,7 +39,7 @@ vi kan börja testa med riktiga barn tidigt.
 - [x] Steg 0 → 1 enligt kriteriet (två rundor + barnet säger att knep hjälper)
 - [x] Skolkopplingen (grund): förälder lägger in listor `fråga = svar`
 - [x] Vuxenläge bakom spärr: profil, lärandeprofil, radera data
-- [x] Samtycke vid första start; all data lokalt
+- [x] Samtycke vid första start; all data lokalt; vuxenkod; uppläsning med lokala röster
 
 ## M2 Hela passet
 
@@ -49,9 +51,9 @@ vi kan börja testa med riktiga barn tidigt.
 - [ ] **Transferuppdrag** var fjärde vecka (förälder förhör utan appens bilder, registrerar i vuxenläget)
 - [ ] **Upplevelse**: smiley-skala varannan vecka + kort föräldrafråga
 - [ ] Glömskekurva per teknik och materialtyp i lärandeprofilen
-- [ ] **Offline**: service worker, installérbar PWA
-- [ ] Flytta lagring till IndexedDB med schemamigrering (förberedelse för bilder i M4)
-- [ ] Komponent-/e2e-tester (Playwright) för passflödet
+- [ ] Installationsguide för hemskärmen (iOS/Android), som Mattedalens
+- [ ] Telefonens bakåtknapp går tillbaka en skärm i stället för att stänga appen
+- [ ] Flytta till en annan enhet utan server (QR-kod/fil, som Mattedalen)
 - [ ] Skrivläge i Göm och säg för äldre barn
 
 ## M3 Bilder och berättelser (steg 3)

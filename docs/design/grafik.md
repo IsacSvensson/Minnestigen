@@ -5,8 +5,9 @@ illustrationsbanker, UI-kit eller stockbilder. Det ger ett eget, sammanhållet b
 undviker rättighetsproblem (se [06](../06-integritet-och-etik.md)) och gör att vi kan rita
 exakt det pedagogiken kräver – t.ex. *levande, handlande figurer* (Blunt & VanArsdall 2021).
 
-Grafiken skrivs som **SVG i React-komponenter** under [`src/graphics/`](../../src/graphics).
-Det gör den skarp på alla skärmar, liten, temabar och lätt att animera. Se
+Grafiken skrivs som **handskriven SVG-markup i TypeScript** under [`src/graphics/`](../../src/graphics)
+(`svgMarkup()` gör ett `<svg>` av den). Det gör den skarp på alla skärmar, liten, temabar och
+lätt att animera. Se
 [ADR 0002](../adr/0002-egen-grafik-som-svg.md).
 
 ## Bildspråk
@@ -23,7 +24,7 @@ Det gör den skarp på alla skärmar, liten, temabar och lätt att animera. Se
 ## Palett
 
 Definieras två gånger och hålls i synk: CSS-tokens i
-[`src/ui/theme.css`](../../src/ui/theme.css) och konstanter i
+[`src/shell/styles.css`](../../src/shell/styles.css) och konstanter i
 [`src/graphics/palette.ts`](../../src/graphics/palette.ts).
 
 | Token | Hex | Används till |
@@ -43,7 +44,8 @@ kant – vi visar vad som var rätt, inte att barnet misslyckades.
 
 ## Typografi
 
-Nunito (variabel, öppen licens OFL, självhostad via `@fontsource-variable/nunito`).
+Nunito (öppen licens OFL), självhostad i `src/shell/fonts/` (vikt 600, 700, 800) så att appen
+fungerar offline.
 Typsnittet är det enda visuella elementet vi inte ritat själva – det kan bytas mot ett
 eget/licensierat typsnitt senare. Bastext 20 px; rubriker extra feta.
 
@@ -51,10 +53,11 @@ eget/licensierat typsnitt senare. Bastext 20 px; rubriker extra feta.
 
 | Del | Fil | Status |
 |---|---|---|
-| **Ugglan** – guide, lägen `happy`, `thinking`, `cheer`, `sleepy` | `Owl.tsx` | ✅ |
-| **Föremål** – 16 st (äpple, fisk, nyckel, båt, hatt, sol, bok, sko, boll, kopp, blomma, paraply, stjärna, klocka, ballong, morot) | `pictures.tsx` | ✅ |
-| **Ikoner** – 32-rutnät, `currentColor` | `icons.tsx` | ✅ |
-| **Mönsterskogen** – stigen, lyktor som tänds per pass, träd | `ForestScene.tsx` | ✅ |
+| **Ugglan** – guide, lägen `happy`, `thinking`, `cheer`, `sleepy` | `owl.ts` | ✅ |
+| **Föremål** – 16 st (äpple, fisk, nyckel, båt, hatt, sol, bok, sko, boll, kopp, blomma, paraply, stjärna, klocka, ballong, morot) | `pictures.ts` | ✅ |
+| **Ikoner** – 32-rutnät, `currentColor` | `icons.ts` | ✅ |
+| **Mönsterskogen** – stigen, lyktor som tänds per pass, träd | `forest.ts` | ✅ |
+| **Burkarna** i Gissa och pröva – gissning mot utfall | `jars.ts` | ✅ |
 | Appikon | `public/icon.svg` | ✅ |
 | Fokuseringsrummet – lugna animerade scener | – | M2 |
 | Kroppslistan och absurda minnesbilder med levande figurer | – | M3 |
@@ -63,8 +66,9 @@ eget/licensierat typsnitt senare. Bastext 20 px; rubriker extra feta.
 
 ## Lägga till ett föremål
 
-1. Lägg till en post i `drawings` i `src/graphics/pictures.tsx` med svenskt namn.
-2. Rita i en 100×100-ruta, använd `outline`-attributen och paletten, lägg till `<Shine>`.
+1. Lägg till id och svenskt namn i `src/content/pictures.ts`.
+2. Rita i `DRAWINGS` i `src/graphics/pictures.ts`: en 100×100-ruta, konturattributen `O`,
+   paletten och en `shine()`-glans.
 3. Kontrollera att det syns tydligt i 64 px och inte liknar ett befintligt föremål
    (viktigt i igenkänningstestet i Gissa och pröva).
 4. Ta en skärmdump och lägg i PR:en.
@@ -78,5 +82,5 @@ eget/licensierat typsnitt senare. Bastext 20 px; rubriker extra feta.
 ## Skärmdumpar (M1)
 
 ![Steg 0 – Gissa och pröva](skarmdumpar/m1-steg0.png)
-![Steg 1 – Göm och säg](skarmdumpar/m1-steg1.png)
-![Skogen, repetition och vuxenläge](skarmdumpar/m1-skog-och-repetition.png)
+![Göm och säg, avslut, vuxenkod och vuxenläge](skarmdumpar/m1-steg1.png)
+![Mönsterskogen på telefon och surfplatta](skarmdumpar/m1-skog-och-repetition.png)
