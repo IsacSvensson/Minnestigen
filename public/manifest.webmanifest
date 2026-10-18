@@ -1,0 +1,11 @@
+{
+  "name": "Minnesstigen",
+  "short_name": "Minnesstigen",
+  "lang": "sv",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf6ec",
+  "theme_color": "#2f5d50",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
